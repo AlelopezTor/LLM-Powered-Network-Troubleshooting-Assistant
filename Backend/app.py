@@ -11,7 +11,7 @@ MODEL = "llama3"
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Backend Flask con Ollama funcionando 🚀"
+    return "Backend Flask with Ollama working"
 
 
 @app.route("/chat", methods=["POST"])
