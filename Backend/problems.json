@@ -1,0 +1,44 @@
+{
+  "no_internet": {
+    "keywords": ["no internet", "don't have internet", "don't have connection"],
+    "command": "ping",
+    "analysis": "If ping fails, there is no network connectivity.",
+    "suggestion": "Check your router, cables, or Wi-Fi connection."
+  },
+  "slow_connection": {
+    "keywords": ["waiting a lot", "slow internet", "lag"],
+    "command": "ping",
+    "analysis": "High latency indicates a slow connection.",
+    "suggestion": "Try restarting your router or contacting your ISP."
+  },
+  "check_ip": {
+    "keywords": ["check my ip", "what is my ip", "show ip", "my ip"],
+    "command": "ipconfig",
+    "analysis": "Shows your current IP address.",
+    "suggestion": "Use the command prompt to check your IP address."
+  },
+  "check_dns": {
+    "keywords": ["check dns", "what is my dns", "show dns", "my dns"],
+    "command": "nslookup",
+    "analysis": "Shows your current DNS server.",
+    "suggestion": "Use the command prompt to check your DNS server."
+  },
+  "check_firewall": {
+    "keywords": ["check firewall", "what is my firewall", "show firewall", "my firewall"],
+    "command": "nc",
+    "analysis": "Checks if specific ports are open, indicating firewall rules.",
+    "suggestion": "Use the command prompt to check your firewall settings."
+  },
+  "check_response": {
+    "keywords": ["check response", "see response", "show response", "my response"],
+    "command": "curl",
+    "analysis": "Shows the HTTP response from a server.",
+    "suggestion": "Use curl to inspect the server response and status code."
+  },
+  "check_rate_limit": {
+    "keywords": ["check rate limit", "too many requests", "blocked requests"],
+    "command": "curl",
+    "analysis": "Checks if the server is limiting requests due to rate limits.(error 429)",
+    "suggestion": "Reduce request frequency or handle retries with delays."
+  }
+}
