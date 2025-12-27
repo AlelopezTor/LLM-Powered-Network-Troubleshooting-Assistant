@@ -1,1 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Assistant - v1.0</title>
+    
+    <style>
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: Arial, sans-serif;
+            background-color: #f8d7e3;
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: 100vh; 
+        }
 
+        .chat-window { 
+            width: 800px; 
+            height: 80vh;
+            background-color: white; 
+            border: 2px solid #333;
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .top-bar { 
+            background-color: #eee;
+            padding: 15px; 
+            border-bottom: 2px solid #333;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .app-title { 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+        }
+
+        .connection-status { 
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        #messages-container { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            background-color: white; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+        }
+        
+        .message-bubble { 
+            max-width: 80%; 
+            padding: 10px; 
+            border: 1px solid #ccc;
+            font-size: 0.9rem; 
+        }
+        
+        .user-message { 
+            align-self: flex-end; 
+            background-color: #eb2675;
+            color: white; 
+        }
+        
+        .bot-message { 
+            align-self: flex-start; 
+            background-color: #f0f0f0; 
+            color: black; 
+        }
+        
+        .terminal-output { 
+            font-family: monospace;
+            background-color: #eee;
+            padding: 10px;
+            border-left: 3px solid #333;
+            white-space: pre-wrap;
+        }
+
+        .input-area { 
+            padding: 20px; 
+            background: #eee; 
+            border-top: 2px solid #333; 
+        }
+        
+        .quick-actions { 
+            margin-bottom: 10px; 
+        }
+        
+        .action-btn { 
+            background: #ddd; 
+            border: 1px solid #999; 
+            padding: 5px 15px; 
+            cursor: pointer; 
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .text-input-wrapper { display: flex; gap: 5px; }
+        
+        input { 
+            flex: 1; 
+            padding: 10px; 
+            border: 1px solid #999; 
+        }
+        
+        button#send-btn { 
+            background: #333; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-window">
+        <header class="top-bar">
+            <div class="app-title">Network Assistant</div>
+            <div id="status-indicator" class="connection-status">Connecting...</div>
+        </header>
+
+        <div id="messages-container">
+            <div class="message-bubble bot-message">
+                System Ready.
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="quick-actions">
+                <button class="action-btn" onclick="executeNetworkCommand('ping')">Ping</button>
+                <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">IPConfig</button>
+                <button class="action-btn" onclick="executeNetworkCommand('traceroute')">Traceroute</button>
+            </div>
+            
+            <div class="text-input-wrapper">
+                <input type="text" id="user-input-field" placeholder="Enter command..." onkeypress="handleKeyPress(event)" autocomplete="off">
+                <button id="send-btn" onclick="handleSendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = "http://127.0.0.1:5000"; 
+        
+        const chatContainer = document.getElementById('messages-container');
+        const statusLabel = document.getElementById('status-indicator');
+        const inputField = document.getElementById('user-input-field');
+        const sendButton = document.getElementById('send-btn');
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(SERVER_URL + '/');
+                if (response.ok) {
+                    statusLabel.innerText = "Status: ONLINE";
+                    statusLabel.style.color = "green";
+                } else {
+                    throw new Error("Error");
+                }
+            } catch (error) {
+                statusLabel.innerText = "Status: OFFLINE";
+                statusLabel.style.color = "red";
+            }
+        }
+        
+        setInterval(checkServerStatus, 5000);
+        checkServerStatus();
+
+        function appendMessageToChat(content, senderType) {
+            const messageDiv = document.createElement('div');
+            
+            if (senderType === 'user') {
+                messageDiv.className = 'message-bubble user-message';
+            } else {
+                messageDiv.className = 'message-bubble bot-message';
+            }
+
+            messageDiv.innerHTML = content.replace(/\n/g, '<br>'); 
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function handleSendMessage() {
+            const userText = inputField.value.trim();
+            if (userText === "") return;
+
+            appendMessageToChat(userText, 'user');
+            inputField.value = '';
+            
+            toggleLoadingState(true);
+
+            try {
+                const response = await fetch(SERVER_URL + '/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: userText }) 
+                });
+                
+                if (!response.ok) throw new Error("Error");
+                const data = await response.json();
+                
+                if (data.response) {
+                    appendMessageToChat(data.response, 'ai');
+                } else {
+                    appendMessageToChat("No response.", 'ai');
+                }
+
+            } catch (error) {
+                appendMessageToChat("Connection Error.", 'ai');
+            }
+            toggleLoadingState(false);
+        }
+
+        async function executeNetworkCommand(commandName) {
+            let displayText = commandName;
+            if (commandName === 'ping') displayText = 'ping google.com';
+
+            appendMessageToChat(`Running: ${displayText}`, 'user');
+            toggleLoadingState(true);
+
+            try {
+                const response = await fetch(SERVER_URL + '/run', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ command: commandName }) 
+                });
+                
+                if (!response.ok) throw new Error("Error");
+                const data = await response.json();
+
+                if (data.output) {
+                    const simpleOutput = `<div class="terminal-output">${data.output}</div>`;
+                    appendMessageToChat(simpleOutput, 'ai');
+                } else {
+                    appendMessageToChat("Done (no output).", 'ai');
+                }
+
+            } catch (error) {
+                appendMessageToChat("Command failed.", 'ai');
+            }
+            toggleLoadingState(false);
+        }
+
+        function toggleLoadingState(isLoading) {
+            const actionButtons = document.querySelectorAll('.action-btn');
+            sendButton.disabled = isLoading;
+            actionButtons.forEach(btn => btn.disabled = isLoading);
+            
+            if (isLoading) {
+                statusLabel.innerText = "Working..."; 
+            } else {
+                checkServerStatus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') handleSendMessage();
+        }
+    </script>
+</body>
+</html>
