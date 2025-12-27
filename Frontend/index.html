@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Network Assistant - v1.0</title>
+    <title>Network Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { box-sizing: border-box; }
         
         body { 
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8d7e3;
+            background-image: linear-gradient(135deg, #f8d7e3 0%, #ffe0e9 100%);
             margin: 0; 
+            padding: 0;
             display: flex; 
             justify-content: center; 
             align-items: center;
@@ -19,131 +22,181 @@
         }
 
         .chat-window { 
-            width: 800px; 
-            height: 80vh;
-            background-color: white; 
-            border: 2px solid #333;
+            width: 90%; 
+            max-width: 850px; 
+            height: 85vh;
+            background-color: #ffffff; 
             display: flex; 
             flex-direction: column; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 40px rgba(189, 75, 126, 0.2); 
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
         
         .top-bar { 
-            background-color: #eee;
-            padding: 15px; 
-            border-bottom: 2px solid #333;
+            background-color: #ffffff;
+            color: #333; 
+            padding: 20px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            border-bottom: 2px solid #f0f0f0;
         }
         
         .app-title { 
-            font-size: 1.1rem; 
+            font-size: 1.2rem; 
             font-weight: bold; 
+            color: #eb2675;
         }
 
         .connection-status { 
-            font-weight: bold;
-            font-size: 0.9rem;
-            color: #555;
+            background: #ffe4e1; 
+            color: #c0392b; 
+            padding: 5px 15px; 
+            border-radius: 15px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
         }
         
         #messages-container { 
             flex: 1; 
             padding: 20px; 
             overflow-y: auto; 
-            background-color: white; 
+            background-color: #fafafa; 
             display: flex; 
             flex-direction: column; 
-            gap: 10px; 
+            gap: 15px; 
         }
         
         .message-bubble { 
             max-width: 80%; 
-            padding: 10px; 
-            border: 1px solid #ccc;
-            font-size: 0.9rem; 
+            padding: 12px 18px; 
+            border-radius: 15px; 
+            line-height: 1.5; 
+            font-size: 0.95rem; 
         }
         
         .user-message { 
             align-self: flex-end; 
             background-color: #eb2675;
             color: white; 
+            border-bottom-right-radius: 2px;
         }
         
         .bot-message { 
             align-self: flex-start; 
-            background-color: #f0f0f0; 
-            color: black; 
+            background-color: #ffffff; 
+            color: #333; 
+            border: 1px solid #e0e0e0; 
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
         .terminal-output { 
-            font-family: monospace;
-            background-color: #eee;
-            padding: 10px;
-            border-left: 3px solid #333;
-            white-space: pre-wrap;
+            font-family: 'Consolas', monospace; 
+            background: #2d3436; 
+            color: #55efc4; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 5px;
+            font-size: 0.85rem;
         }
 
         .input-area { 
             padding: 20px; 
-            background: #eee; 
-            border-top: 2px solid #333; 
+            background: white; 
+            border-top: 1px solid #f0f0f0; 
+            border-radius: 10px; 
+            outline: none; 
         }
         
         .quick-actions { 
-            margin-bottom: 10px; 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+            overflow-x: auto; 
         }
         
         .action-btn { 
-            background: #ddd; 
-            border: 1px solid #999; 
-            padding: 5px 15px; 
+            background: #fdf2f8; 
+            color: #eb2675; 
+            border: 1px solid #fbcfe8; 
+            padding: 8px 15px; 
+            border-radius: 10px; 
             cursor: pointer; 
-            font-weight: bold;
-            margin-right: 5px;
+            font-weight: 600; 
+            transition: 0.2s;
+            white-space: nowrap;
         }
         
-        .text-input-wrapper { display: flex; gap: 5px; }
+        .action-btn:hover { background: #eb2675; color: white; }
+        
+        .text-input-wrapper { display: flex; gap: 10px; }
         
         input { 
             flex: 1; 
-            padding: 10px; 
-            border: 1px solid #999; 
+            padding: 12px; 
+            border: 2px solid #f0f0f0; 
+            border-radius: 10px; 
+            outline: none; 
         }
         
+        input:focus { border-color: #eb2675; }
+        
         button#send-btn { 
-            background: #333; 
+            background: #eb2675; 
             color: white; 
             border: none; 
-            padding: 10px 20px; 
+            padding: 0 25px; 
+            border-radius: 10px; 
             cursor: pointer; 
+            font-weight: bold; 
         }
+        
+        button#send-btn:hover { opacity: 0.9; }
+
+        .fa-spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div class="chat-window">
         <header class="top-bar">
-            <div class="app-title">Network Assistant</div>
-            <div id="status-indicator" class="connection-status">Connecting...</div>
+            <div class="app-title">
+                <i class="fas fa-network-wired"></i> Network Assistant
+            </div>
+            <div id="status-indicator" class="connection-status">
+                <i class="fas fa-circle-notch fa-spin"></i> Connecting...
+            </div>
         </header>
 
         <div id="messages-container">
             <div class="message-bubble bot-message">
-                System ready.
+                <i class="fas fa-robot"></i> Hello! I am your network assistant.<br>
+                Please describe your issue or select a tool below.
             </div>
         </div>
 
         <div class="input-area">
             <div class="quick-actions">
-                <button class="action-btn" onclick="executeNetworkCommand('ping')">Ping</button>
-                <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">IPConfig</button>
-                <button class="action-btn" onclick="executeNetworkCommand('traceroute')">Traceroute</button>
+                <button class="action-btn" onclick="executeNetworkCommand('ping')">
+                    <i class="fas fa-bolt"></i> Ping
+                </button>
+                <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">
+                    <i class="fas fa-list"></i> IP Config
+                </button>
+                <button class="action-btn" onclick="executeNetworkCommand('traceroute')">
+                    <i class="fas fa-route"></i> Trace Route
+                </button>
             </div>
             
             <div class="text-input-wrapper">
-                <input type="text" id="user-input-field" placeholder="Enter command..." onkeypress="handleKeyPress(event)" autocomplete="off">
-                <button id="send-btn" onclick="handleSendMessage()">Send</button>
+                <input type="text" id="user-input-field" placeholder="Type here..." onkeypress="handleKeyPress(event)" autocomplete="off">
+                <button id="send-btn" onclick="handleSendMessage()">
+                    SEND <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -159,15 +212,18 @@
         async function checkServerStatus() {
             try {
                 const response = await fetch(SERVER_URL + '/');
+                
                 if (response.ok) {
-                    statusLabel.innerText = "Status: ONLINE";
-                    statusLabel.style.color = "green";
+                    statusLabel.innerHTML = '<i class="fas fa-wifi"></i> ONLINE';
+                    statusLabel.style.backgroundColor = "#d1fae5";
+                    statusLabel.style.color = "#047857";
                 } else {
-                    throw new Error("Error");
+                    throw new Error("Server response not correct");
                 }
             } catch (error) {
-                statusLabel.innerText = "Status: OFFLINE";
-                statusLabel.style.color = "red";
+                statusLabel.innerHTML = 'OFFLINE';
+                statusLabel.style.backgroundColor = "#fee2e2";
+                statusLabel.style.color = "#b91c1c";
             }
         }
         
@@ -184,13 +240,17 @@
             }
 
             messageDiv.innerHTML = content.replace(/\n/g, '<br>'); 
+            
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         async function handleSendMessage() {
             const userText = inputField.value.trim();
-            if (userText === "") return;
+            
+            if (userText === "") {
+                return;
+            }
 
             appendMessageToChat(userText, 'user');
             inputField.value = '';
@@ -200,69 +260,91 @@
             try {
                 const response = await fetch(SERVER_URL + '/chat', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ message: userText }) 
                 });
                 
-                if (!response.ok) throw new Error("Error");
+                if (!response.ok) {
+                    throw new Error("Failed to communicate with server");
+                }
+
                 const data = await response.json();
                 
                 if (data.response) {
                     appendMessageToChat(data.response, 'ai');
                 } else {
-                    appendMessageToChat("No response.", 'ai');
+                    appendMessageToChat("No response received from agent.", 'ai');
                 }
 
             } catch (error) {
-                appendMessageToChat("Connection Error.", 'ai');
+                console.error(error);
+                appendMessageToChat("Connection Error: Unable to reach the server.", 'ai');
             }
+            
             toggleLoadingState(false);
         }
 
         async function executeNetworkCommand(commandName) {
             let displayText = commandName;
-            if (commandName === 'ping') displayText = 'ping google.com';
+            
+            if (commandName === 'ping') {
+                displayText = 'ping google.com';
+            }
 
-            appendMessageToChat(`Running: ${displayText}`, 'user');
+            appendMessageToChat(`Executing: <code>${displayText}</code>`, 'user');
             toggleLoadingState(true);
 
             try {
                 const response = await fetch(SERVER_URL + '/run', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ command: commandName }) 
                 });
                 
-                if (!response.ok) throw new Error("Error");
+                if (!response.ok) {
+                    throw new Error("Command failed");
+                }
+
                 const data = await response.json();
 
                 if (data.output) {
-                    const simpleOutput = `<div class="terminal-output">${data.output}</div>`;
-                    appendMessageToChat(simpleOutput, 'ai');
+                    const formattedOutput = `<div class="terminal-output">${data.output}</div>`;
+                    appendMessageToChat(formattedOutput, 'ai');
                 } else {
-                    appendMessageToChat("Done (no output).", 'ai');
+                    appendMessageToChat("Command finished but there is no output returned.", 'ai');
                 }
 
             } catch (error) {
-                appendMessageToChat("Command failed.", 'ai');
+                console.error(error);
+                appendMessageToChat("Error: Failed to execute network command.", 'ai');
             }
+            
             toggleLoadingState(false);
         }
 
         function toggleLoadingState(isLoading) {
             const actionButtons = document.querySelectorAll('.action-btn');
+            
             sendButton.disabled = isLoading;
-            actionButtons.forEach(btn => btn.disabled = isLoading);
+            actionButtons.forEach(btn => {
+                btn.disabled = isLoading;
+            });
             
             if (isLoading) {
-                statusLabel.innerText = "Working..."; 
+                statusLabel.innerHTML = 'BUSY...';
             } else {
                 checkServerStatus();
             }
         }
 
         function handleKeyPress(event) {
-            if (event.key === 'Enter') handleSendMessage();
+            if (event.key === 'Enter') {
+                handleSendMessage();
+            }
         }
     </script>
 </body>
