@@ -190,6 +190,9 @@
                 <button class="action-btn" onclick="executeNetworkCommand('traceroute')">
                     <i class="fas fa-route"></i> Trace Route
                 </button>
+                <button class="action-btn" onclick="executeNetworkCommand('nslookup')">
+                    <i class="fas fa-search"></i> NSLookup
+                </button>
             </div>
             
             <div class="text-input-wrapper">
@@ -280,7 +283,7 @@
 
             } catch (error) {
                 console.error(error);
-                appendMessageToChat("Connection Error: Unable to reach the server.", 'ai');
+                appendMessageToChat("Connection error: Unable to reach the server.", 'ai');
             }
             
             toggleLoadingState(false);
@@ -291,6 +294,8 @@
             
             if (commandName === 'ping') {
                 displayText = 'ping google.com';
+            } else if (commandName === 'nslookup') {
+                displayText = 'nslookup google.com';
             }
 
             appendMessageToChat(`Executing: <code>${displayText}</code>`, 'user');
@@ -315,7 +320,7 @@
                     const formattedOutput = `<div class="terminal-output">${data.output}</div>`;
                     appendMessageToChat(formattedOutput, 'ai');
                 } else {
-                    appendMessageToChat("Command finished but there is no output returned.", 'ai');
+                    appendMessageToChat("Command finished but there is no returned output.", 'ai');
                 }
 
             } catch (error) {
