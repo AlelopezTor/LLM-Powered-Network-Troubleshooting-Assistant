@@ -317,8 +317,8 @@
 
             <div id="messages-container">
                 <div class="message-bubble bot-message">
-                    <i class="fas fa-robot"></i> System Online.<br>
-                    Real-time monitoring is active. How can I help?
+                    <i class="fas fa-robot"></i> System Status: NOMINAL.<br>
+                    Telemetry dashboard synchronized. Ready for diagnostics.
                 </div>
             </div>
 
@@ -449,7 +449,7 @@
                     appendMessageToChat("No response.", 'ai');
                 }
             } catch (error) {
-                appendMessageToChat("Connection Error.", 'ai');
+                appendMessageToChat("Connection error.", 'ai');
             }
             toggleLoadingState(false);
         }
