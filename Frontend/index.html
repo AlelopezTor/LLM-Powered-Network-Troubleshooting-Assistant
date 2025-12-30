@@ -29,6 +29,7 @@
             gap: 20px;
         }
 
+
         .glass-sidebar {
             width: 280px;
             background: rgba(255, 255, 255, 0.4);
@@ -40,7 +41,20 @@
             gap: 20px;
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            white-space: nowrap;
         }
+
+
+        .glass-sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            border: none;
+            opacity: 0;
+        }
+
+
 
         .sidebar-title {
             font-size: 0.85rem;
@@ -54,6 +68,7 @@
             gap: 10px;
         }
 
+
         .stat-card {
             background: rgba(255, 255, 255, 0.6);
             padding: 20px;
@@ -61,7 +76,9 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             transition: transform 0.2s;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            min-width: 200px;
         }
+
 
         .stat-card:hover {
             transform: translateY(-3px);
@@ -84,6 +101,7 @@
             align-items: center;
             gap: 10px;
         }
+
 
         .chat-window { 
             flex: 1;
@@ -110,7 +128,22 @@
             font-size: 1.2rem; 
             font-weight: bold; 
             color: #eb2675;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
+
+        #menu-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #eb2675;
+            font-size: 1.2rem;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        #menu-toggle-btn:hover { transform: scale(1.1); }
         
         #messages-container { 
             flex: 1; 
@@ -234,6 +267,7 @@
             .glass-sidebar { width: 100%; flex-direction: row; height: auto; padding: 15px; overflow-x: auto; }
             .stat-card { min-width: 150px; }
             .chat-window { border-radius: 0; }
+            #menu-toggle-btn { display: none; } /* Auto-show on mobile */
         }
     </style>
 </head>
@@ -241,7 +275,8 @@
 
     <div class="main-layout">
         
-        <div class="glass-sidebar">
+        <div class="glass-sidebar" id="dashboard-sidebar">
+
             <div class="sidebar-title">
                 <i class="fas fa-server"></i> Network Monitor
             </div>
@@ -273,7 +308,10 @@
         <div class="chat-window">
             <header class="top-bar">
                 <div class="app-title">
-                    <i class="fas fa-network-wired"></i> Network AI Agent
+                    <button id="menu-toggle-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span><i class="fas fa-network-wired"></i> Network AI Agent</span>
                 </div>
             </header>
 
@@ -316,11 +354,20 @@
         const chatContainer = document.getElementById('messages-container');
         const inputField = document.getElementById('user-input-field');
         const sendButton = document.getElementById('send-btn');
+        const sidebar = document.getElementById('dashboard-sidebar');
         
         const dashStatusText = document.getElementById('dash-status-text');
         const dashStatusDot = document.getElementById('dash-status-dot');
         const dashLatency = document.getElementById('dash-latency');
         const dashTime = document.getElementById('dash-time');
+
+
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+        }
+
+
 
         async function updateDashboard() {
             const start = Date.now();
