@@ -21,10 +21,72 @@
             height: 100vh; 
         }
 
+        .main-layout {
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            gap: 20px;
+        }
+
+        .glass-sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #eb2675;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .chat-window { 
-            width: 90%; 
-            max-width: 850px; 
-            height: 85vh;
+            flex: 1;
             background-color: #ffffff; 
             display: flex; 
             flex-direction: column; 
@@ -49,19 +111,10 @@
             font-weight: bold; 
             color: #eb2675;
         }
-
-        .connection-status { 
-            background: #ffe4e1; 
-            color: #c0392b; 
-            padding: 5px 15px; 
-            border-radius: 15px; 
-            font-size: 0.75rem; 
-            font-weight: bold; 
-        }
         
         #messages-container { 
             flex: 1; 
-            padding: 20px; 
+            padding: 25px; 
             overflow-y: auto; 
             background-color: #fafafa; 
             display: flex; 
@@ -107,7 +160,6 @@
             padding: 20px; 
             background: white; 
             border-top: 1px solid #f0f0f0; 
-            border-radius: 10px; 
             outline: none; 
         }
         
@@ -122,24 +174,26 @@
             background: #fdf2f8; 
             color: #eb2675; 
             border: 1px solid #fbcfe8; 
-            padding: 8px 15px; 
-            border-radius: 10px; 
+            padding: 10px 18px; 
+            border-radius: 12px; 
             cursor: pointer; 
             font-weight: 600; 
             transition: 0.2s;
             white-space: nowrap;
+            font-size: 0.9rem;
         }
         
-        .action-btn:hover { background: #eb2675; color: white; }
+        .action-btn:hover { background: #eb2675; color: white; transform: translateY(-2px); }
         
         .text-input-wrapper { display: flex; gap: 10px; }
         
         input { 
             flex: 1; 
-            padding: 12px; 
+            padding: 14px; 
             border: 2px solid #f0f0f0; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             outline: none; 
+            font-size: 1rem;
         }
         
         input:focus { border-color: #eb2675; }
@@ -148,58 +202,110 @@
             background: #eb2675; 
             color: white; 
             border: none; 
-            padding: 0 25px; 
-            border-radius: 10px; 
+            padding: 0 30px; 
+            border-radius: 12px; 
             cursor: pointer; 
             font-weight: bold; 
+            font-size: 0.9rem;
         }
         
         button#send-btn:hover { opacity: 0.9; }
 
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; animation: pulse 2s infinite; }
+        .offline { background-color: #e74c3c; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
         .fa-spinner { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 850px) {
+            .main-layout { flex-direction: column; height: 100vh; width: 100%; }
+            .glass-sidebar { width: 100%; flex-direction: row; height: auto; padding: 15px; overflow-x: auto; }
+            .stat-card { min-width: 150px; }
+            .chat-window { border-radius: 0; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="chat-window">
-        <header class="top-bar">
-            <div class="app-title">
-                <i class="fas fa-network-wired"></i> Network Assistant
+    <div class="main-layout">
+        
+        <div class="glass-sidebar">
+            <div class="sidebar-title">
+                <i class="fas fa-server"></i> Network Monitor
             </div>
-            <div id="status-indicator" class="connection-status">
-                <i class="fas fa-circle-notch fa-spin"></i> Connecting...
+            
+            <div class="stat-card">
+                <div class="stat-label">SYSTEM STATUS</div>
+                <div class="stat-value" id="dash-status-text">
+                    <span id="dash-status-dot" class="status-dot"></span> --
+                </div>
             </div>
-        </header>
 
-        <div id="messages-container">
-            <div class="message-bubble bot-message">
-                <i class="fas fa-robot"></i> Hello! I am your network assistant.<br>
-                Please describe your issue or select a tool below.
+            <div class="stat-card">
+                <div class="stat-label">SERVER LATENCY</div>
+                <div class="stat-value">
+                    <i class="fas fa-bolt" style="color: #eb2675; font-size: 1.2rem;"></i> 
+                    <span id="dash-latency">--</span> <span style="font-size: 0.8rem; color: #888;">ms</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">LAST CHECK</div>
+                <div class="stat-value">
+                    <i class="far fa-clock" style="color: #eb2675; font-size: 1.2rem;"></i>
+                    <span id="dash-time" style="font-size: 1.1rem;">--:--:--</span>
+                </div>
             </div>
         </div>
 
-        <div class="input-area">
-            <div class="quick-actions">
-                <button class="action-btn" onclick="executeNetworkCommand('ping')">
-                    <i class="fas fa-bolt"></i> Ping
-                </button>
-                <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">
-                    <i class="fas fa-list"></i> IP Config
-                </button>
-                <button class="action-btn" onclick="executeNetworkCommand('traceroute')">
-                    <i class="fas fa-route"></i> Trace Route
-                </button>
-                <button class="action-btn" onclick="executeNetworkCommand('nslookup')">
-                    <i class="fas fa-search"></i> NSLookup
-                </button>
+        <div class="chat-window">
+            <header class="top-bar">
+                <div class="app-title">
+                    <i class="fas fa-network-wired"></i> Network AI Agent
+                </div>
+            </header>
+
+            <div id="messages-container">
+                <div class="message-bubble bot-message">
+                    <i class="fas fa-robot"></i> System Online.<br>
+                    Real-time monitoring is active. How can I help?
+                </div>
             </div>
-            
-            <div class="text-input-wrapper">
-                <input type="text" id="user-input-field" placeholder="Type here..." onkeypress="handleKeyPress(event)" autocomplete="off">
-                <button id="send-btn" onclick="handleSendMessage()">
-                    SEND <i class="fas fa-paper-plane"></i>
-                </button>
+
+            <div class="input-area">
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="executeNetworkCommand('ping')">
+                        <i class="fas fa-bolt"></i> Ping
+                    </button>
+                    <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">
+                        <i class="fas fa-list"></i> IP Config
+                    </button>
+                    <button class="action-btn" onclick="executeNetworkCommand('traceroute')">
+                        <i class="fas fa-route"></i> Trace Route
+                    </button>
+                    <button class="action-btn" onclick="executeNetworkCommand('nslookup')">
+                        <i class="fas fa-search"></i> NSLookup
+                    </button>
+                </div>
+                
+                <div class="text-input-wrapper">
+                    <input type="text" id="user-input-field" placeholder="Describe the problem..." onkeypress="handleKeyPress(event)" autocomplete="off">
+                    <button id="send-btn" onclick="handleSendMessage()">
+                        SEND <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -208,30 +314,55 @@
         const SERVER_URL = "http://127.0.0.1:5000"; 
         
         const chatContainer = document.getElementById('messages-container');
-        const statusLabel = document.getElementById('status-indicator');
         const inputField = document.getElementById('user-input-field');
         const sendButton = document.getElementById('send-btn');
+        
+        const dashStatusText = document.getElementById('dash-status-text');
+        const dashStatusDot = document.getElementById('dash-status-dot');
+        const dashLatency = document.getElementById('dash-latency');
+        const dashTime = document.getElementById('dash-time');
 
-        async function checkServerStatus() {
+        async function updateDashboard() {
+            const start = Date.now();
             try {
                 const response = await fetch(SERVER_URL + '/');
-                
+                const end = Date.now();
+                const latency = end - start;
+                const now = new Date();
+
                 if (response.ok) {
-                    statusLabel.innerHTML = '<i class="fas fa-wifi"></i> ONLINE';
-                    statusLabel.style.backgroundColor = "#d1fae5";
-                    statusLabel.style.color = "#047857";
+                    dashStatusText.innerHTML = "";
+                    dashStatusDot.className = "status-dot online";
+                    dashStatusText.appendChild(dashStatusDot);
+                    dashStatusText.append(" ONLINE");
+                    
+                    dashLatency.innerText = latency;
+                    dashLatency.style.color = latency < 100 ? "#333" : "#e74c3c";
+                    
+                    dashTime.innerText = now.toLocaleTimeString();
+                    dashTime.style.fontSize = "1.1rem";
                 } else {
-                    throw new Error("Server response not correct");
+                    throw new Error("Server error");
                 }
             } catch (error) {
-                statusLabel.innerHTML = 'OFFLINE';
-                statusLabel.style.backgroundColor = "#fee2e2";
-                statusLabel.style.color = "#b91c1c";
+                dashStatusText.innerHTML = "";
+                dashStatusDot.className = "status-dot offline";
+                dashStatusText.appendChild(dashStatusDot);
+                
+                const statusTextSpan = document.createElement("span");
+                statusTextSpan.innerText = " OFFLINE";
+                statusTextSpan.style.fontSize = "1rem"; 
+                dashStatusText.appendChild(statusTextSpan);
+                
+                dashLatency.innerText = "--";
+                
+                dashTime.innerText = "Connection lost.";
+                dashTime.style.fontSize = "0.9rem"; 
             }
         }
         
-        setInterval(checkServerStatus, 5000);
-        checkServerStatus();
+        setInterval(updateDashboard, 3000);
+        updateDashboard();
 
         function appendMessageToChat(content, senderType) {
             const messageDiv = document.createElement('div');
@@ -243,113 +374,77 @@
             }
 
             messageDiv.innerHTML = content.replace(/\n/g, '<br>'); 
-            
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         async function handleSendMessage() {
             const userText = inputField.value.trim();
-            
-            if (userText === "") {
-                return;
-            }
+            if (userText === "") return;
 
             appendMessageToChat(userText, 'user');
             inputField.value = '';
-            
             toggleLoadingState(true);
 
             try {
                 const response = await fetch(SERVER_URL + '/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userText }) 
                 });
                 
-                if (!response.ok) {
-                    throw new Error("Failed to communicate with server");
-                }
-
+                if (!response.ok) throw new Error("Error");
                 const data = await response.json();
                 
                 if (data.response) {
                     appendMessageToChat(data.response, 'ai');
                 } else {
-                    appendMessageToChat("No response received from agent.", 'ai');
+                    appendMessageToChat("No response.", 'ai');
                 }
-
             } catch (error) {
-                console.error(error);
-                appendMessageToChat("Connection error: Unable to reach the server.", 'ai');
+                appendMessageToChat("Connection Error.", 'ai');
             }
-            
             toggleLoadingState(false);
         }
 
         async function executeNetworkCommand(commandName) {
             let displayText = commandName;
-            
-            if (commandName === 'ping') {
-                displayText = 'ping google.com';
-            } else if (commandName === 'nslookup') {
-                displayText = 'nslookup google.com';
-            }
+            if (commandName === 'ping') displayText = 'ping google.com';
+            if (commandName === 'nslookup') displayText = 'nslookup google.com';
 
-            appendMessageToChat(`Executing: <code>${displayText}</code>`, 'user');
+            appendMessageToChat(`Running: <code>${displayText}</code>`, 'user');
             toggleLoadingState(true);
 
             try {
                 const response = await fetch(SERVER_URL + '/run', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ command: commandName }) 
                 });
                 
-                if (!response.ok) {
-                    throw new Error("Command failed");
-                }
-
+                if (!response.ok) throw new Error("Error");
                 const data = await response.json();
 
                 if (data.output) {
                     const formattedOutput = `<div class="terminal-output">${data.output}</div>`;
                     appendMessageToChat(formattedOutput, 'ai');
                 } else {
-                    appendMessageToChat("Command finished but there is no returned output.", 'ai');
+                    appendMessageToChat("Done (no output).", 'ai');
                 }
-
             } catch (error) {
-                console.error(error);
-                appendMessageToChat("Error: Failed to execute network command.", 'ai');
+                appendMessageToChat("Command failed.", 'ai');
             }
-            
             toggleLoadingState(false);
         }
 
         function toggleLoadingState(isLoading) {
             const actionButtons = document.querySelectorAll('.action-btn');
-            
             sendButton.disabled = isLoading;
-            actionButtons.forEach(btn => {
-                btn.disabled = isLoading;
-            });
-            
-            if (isLoading) {
-                statusLabel.innerHTML = 'BUSY...';
-            } else {
-                checkServerStatus();
-            }
+            actionButtons.forEach(btn => btn.disabled = isLoading);
         }
 
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                handleSendMessage();
-            }
+            if (event.key === 'Enter') handleSendMessage();
         }
     </script>
 </body>
