@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,18 +8,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        :root {
+            --bg-gradient-start: #f8d7e3;
+            --bg-gradient-end: #ffe0e9;
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.6);
+            --card-bg-hover: rgba(255, 255, 255, 0.8);
+            --text-main: #333;
+            --text-secondary: #666;
+            --accent-color: #eb2675;
+            --chat-bg: #ffffff;
+            --msg-bot-bg: #ffffff;
+            --msg-user-text: white;
+            --input-area-bg: white;
+            --toggle-bg: #e0e0e0;
+            --toggle-icon: #f39c12;
+            --tooltip-bg: #333;
+            --tooltip-text: #fff;
+        }
+
+        body.dark-mode {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --glass-bg: rgba(0, 0, 0, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(30, 30, 40, 0.6);
+            --card-bg-hover: rgba(40, 40, 50, 0.8);
+            --text-main: #e0e0e0;
+            --text-secondary: #aaaaaa;
+            --accent-color: #ff007f;
+            --chat-bg: #0f3460;
+            --msg-bot-bg: #1a1a2e;
+            --msg-user-text: white;
+            --input-area-bg: #1a1a2e;
+            --toggle-bg: #333;
+            --toggle-icon: #f1c40f;
+            --tooltip-bg: #fff;
+            --tooltip-text: #333;
+        }
+
         * { box-sizing: border-box; }
         
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8d7e3;
-            background-image: linear-gradient(135deg, #f8d7e3 0%, #ffe0e9 100%);
+            background-color: var(--bg-gradient-start);
+            background-image: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             margin: 0; 
             padding: 0;
             display: flex; 
             justify-content: center; 
             align-items: center;
             height: 100vh; 
+            color: var(--text-main);
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
         .main-layout {
@@ -29,23 +72,20 @@
             gap: 20px;
         }
 
-
         .glass-sidebar {
             width: 280px;
-            background: rgba(255, 255, 255, 0.4);
+            background: var(--glass-bg);
             backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 25px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.5s ease, border-color 0.5s ease;
             overflow: hidden;
-            white-space: nowrap;
         }
-
 
         .glass-sidebar.collapsed {
             width: 0;
@@ -54,12 +94,10 @@
             opacity: 0;
         }
 
-
-
         .sidebar-title {
             font-size: 0.85rem;
             font-weight: 800;
-            color: #eb2675;
+            color: var(--accent-color);
             letter-spacing: 1.5px;
             margin-bottom: 10px;
             text-transform: uppercase;
@@ -68,26 +106,23 @@
             gap: 10px;
         }
 
-
         .stat-card {
-            background: rgba(255, 255, 255, 0.6);
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: transform 0.2s;
+            border: 1px solid var(--glass-border);
+            transition: transform 0.2s, background 0.3s, border-color 0.5s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            min-width: 200px;
         }
-
 
         .stat-card:hover {
             transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.8);
+            background: var(--card-bg-hover);
         }
 
         .stat-label {
             font-size: 0.7rem;
-            color: #666;
+            color: var(--text-secondary);
             font-weight: 700;
             margin-bottom: 8px;
             text-transform: uppercase;
@@ -96,51 +131,159 @@
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #333;
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-
         .chat-window { 
             flex: 1;
-            background-color: #ffffff; 
+            background-color: var(--chat-bg); 
             display: flex; 
             flex-direction: column; 
             border-radius: 20px; 
-            box-shadow: 0 10px 40px rgba(189, 75, 126, 0.2); 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); 
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--glass-border);
+            transition: background-color 0.3s, border-color 0.5s ease;
         }
         
         .top-bar { 
-            background-color: #ffffff;
-            color: #333; 
+            background-color: var(--card-bg);
+            color: var(--text-main); 
             padding: 20px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 1px solid var(--glass-border);
+            transition: background-color 0.3s, border-color 0.5s ease, color 0.5s ease;
         }
         
         .app-title { 
             font-size: 1.2rem; 
             font-weight: bold; 
-            color: #eb2675;
+            color: var(--accent-color);
             display: flex;
             align-items: center;
             gap: 15px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-toggle-btn {
+            background: var(--toggle-bg);
+            border: none;
+            border-radius: 20px;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 50px;
+            height: 26px;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle-icon {
+            color: var(--toggle-icon);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .theme-toggle-icon.sun {
+            left: 5px;
+            opacity: 1;
+        }
+
+        .theme-toggle-icon.moon {
+            right: 5px;
+            opacity: 0;
+        }
+
+        body.dark-mode .theme-toggle-icon.sun {
+            opacity: 0;
+        }
+
+        body.dark-mode .theme-toggle-icon.moon {
+            opacity: 1;
+        }
+
+        .theme-toggle-thumb {
+            background-color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .theme-toggle-thumb {
+            left: 27px;
+            background-color: var(--accent-color);
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: 0.2s, color 0.5s ease, border-color 0.5s ease;
+            position: relative; 
+        }
+        
+        .icon-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 8px;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+
+        .header-actions [data-tooltip]:hover::after {
+            left: auto;
+            right: 0;
+            transform: none;
         }
 
         #menu-toggle-btn {
             background: none;
             border: none;
             cursor: pointer;
-            color: #eb2675;
+            color: var(--accent-color);
             font-size: 1.2rem;
             padding: 5px;
-            transition: transform 0.2s;
+            transition: transform 0.2s, color 0.5s ease;
         }
 
         #menu-toggle-btn:hover { transform: scale(1.1); }
@@ -149,7 +292,7 @@
             flex: 1; 
             padding: 25px; 
             overflow-y: auto; 
-            background-color: #fafafa; 
+            background-color: transparent; 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
@@ -165,18 +308,20 @@
         
         .user-message { 
             align-self: flex-end; 
-            background-color: #eb2675;
-            color: white; 
+            background-color: var(--accent-color);
+            color: var(--msg-user-text); 
             border-bottom-right-radius: 2px;
+            transition: background-color 0.5s ease;
         }
         
         .bot-message { 
             align-self: flex-start; 
-            background-color: #ffffff; 
-            color: #333; 
-            border: 1px solid #e0e0e0; 
+            background-color: var(--msg-bot-bg); 
+            color: var(--text-main); 
+            border: 1px solid var(--glass-border); 
             border-bottom-left-radius: 2px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
         }
         
         .terminal-output { 
@@ -191,9 +336,10 @@
 
         .input-area { 
             padding: 20px; 
-            background: white; 
-            border-top: 1px solid #f0f0f0; 
+            background: var(--input-area-bg); 
+            border-top: 1px solid var(--glass-border); 
             outline: none; 
+            transition: background-color 0.3s, border-color 0.5s ease;
         }
         
         .quick-actions { 
@@ -204,35 +350,38 @@
         }
         
         .action-btn { 
-            background: #fdf2f8; 
-            color: #eb2675; 
-            border: 1px solid #fbcfe8; 
+            background: rgba(255,255,255,0.1); 
+            color: var(--accent-color); 
+            border: 1px solid var(--accent-color); 
             padding: 10px 18px; 
             border-radius: 12px; 
             cursor: pointer; 
             font-weight: 600; 
-            transition: 0.2s;
+            transition: 0.2s, color 0.5s ease, border-color 0.5s ease, background-color 0.5s ease;
             white-space: nowrap;
             font-size: 0.9rem;
         }
         
-        .action-btn:hover { background: #eb2675; color: white; transform: translateY(-2px); }
+        .action-btn:hover { background: var(--accent-color); color: white; transform: translateY(-2px); }
         
         .text-input-wrapper { display: flex; gap: 10px; }
         
         input { 
             flex: 1; 
             padding: 14px; 
-            border: 2px solid #f0f0f0; 
+            border: 2px solid var(--glass-border); 
+            background-color: var(--card-bg);
+            color: var(--text-main);
             border-radius: 12px; 
             outline: none; 
             font-size: 1rem;
+            transition: background-color 0.3s, color 0.5s ease, border-color 0.5s ease;
         }
         
-        input:focus { border-color: #eb2675; }
+        input:focus { border-color: var(--accent-color); }
         
         button#send-btn { 
-            background: #eb2675; 
+            background: var(--accent-color); 
             color: white; 
             border: none; 
             padding: 0 30px; 
@@ -240,6 +389,7 @@
             cursor: pointer; 
             font-weight: bold; 
             font-size: 0.9rem;
+            transition: background-color 0.5s ease;
         }
         
         button#send-btn:hover { opacity: 0.9; }
@@ -266,8 +416,9 @@
             .main-layout { flex-direction: column; height: 100vh; width: 100%; }
             .glass-sidebar { width: 100%; flex-direction: row; height: auto; padding: 15px; overflow-x: auto; }
             .stat-card { min-width: 150px; }
-            .chat-window { border-radius: 0; }
-            #menu-toggle-btn { display: none; } /* Auto-show on mobile */
+            .chat-window { border-radius: 0; flex: 1; }
+            #menu-toggle-btn { display: none; } 
+            .sidebar-title { display: none; } 
         }
     </style>
 </head>
@@ -276,7 +427,6 @@
     <div class="main-layout">
         
         <div class="glass-sidebar" id="dashboard-sidebar">
-
             <div class="sidebar-title">
                 <i class="fas fa-server"></i> Network Monitor
             </div>
@@ -291,15 +441,15 @@
             <div class="stat-card">
                 <div class="stat-label">SERVER LATENCY</div>
                 <div class="stat-value">
-                    <i class="fas fa-bolt" style="color: #eb2675; font-size: 1.2rem;"></i> 
-                    <span id="dash-latency">--</span> <span style="font-size: 0.8rem; color: #888;">ms</span>
+                    <i class="fas fa-bolt" style="color: var(--accent-color); font-size: 1.2rem;"></i> 
+                    <span id="dash-latency">--</span> <span style="font-size: 0.8rem; opacity: 0.7;">ms</span>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-label">LAST CHECK</div>
                 <div class="stat-value">
-                    <i class="far fa-clock" style="color: #eb2675; font-size: 1.2rem;"></i>
+                    <i class="far fa-clock" style="color: var(--accent-color); font-size: 1.2rem;"></i>
                     <span id="dash-time" style="font-size: 1.1rem;">--:--:--</span>
                 </div>
             </div>
@@ -313,11 +463,24 @@
                     </button>
                     <span><i class="fas fa-network-wired"></i> Network AI Agent</span>
                 </div>
+
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="exportChatLog()" data-tooltip="Export Report">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    
+                    <button class="theme-toggle-btn" id="theme-btn" onclick="toggleDarkMode()" data-tooltip="Switch to night mode">
+                        <i class="fas fa-sun theme-toggle-icon sun"></i>
+                        <i class="fas fa-moon theme-toggle-icon moon"></i>
+                        <div class="theme-toggle-thumb"></div>
+                    </button>
+                </div>
             </header>
 
             <div id="messages-container">
                 <div class="message-bubble bot-message">
-                    <i class="fas fa-robot"></i> System Status: NOMINAL.<br>
+                    <i class="fas fa-robot"></i> 
+                    <strong>System Status: NOMINAL.</strong><br>
                     Telemetry dashboard synchronized. Ready for diagnostics.
                 </div>
             </div>
@@ -361,13 +524,60 @@
         const dashLatency = document.getElementById('dash-latency');
         const dashTime = document.getElementById('dash-time');
 
+        function toggleDarkMode() {
+            console.log("User clicked toggle button");
+            
+            var body = document.body;
+            var isDark = body.classList.toggle('dark-mode');
+            
+            var btn = document.getElementById('theme-btn');
+            
+            if (isDark) {
+                console.log("Mode: DARK");
+                btn.setAttribute('data-tooltip', 'Switch to light mode');
+            } else {
+                console.log("Mode: LIGHT");
+                btn.setAttribute('data-tooltip', 'Switch to night mode');
+            }
+        }
 
+        function exportChatLog() {
+            console.log("Starting export...");
+
+            var content = "NETWORK DIAGNOSTIC REPORT\n";
+            var dateNow = new Date().toLocaleString();
+            
+            content = content + "Generated: " + dateNow + "\n";
+            content = content + "--------------------------------\n\n";
+
+            var msgs = document.querySelectorAll('.message-bubble');
+            console.log("Found " + msgs.length + " messages to export");
+
+            msgs.forEach(msg => {
+                var type = "AGENT";
+                if (msg.classList.contains('user-message')) {
+                    type = "USER";
+                }
+                
+                var cleanText = msg.innerText.replace(/\n/g, ' '); 
+                content = content + "[" + type + "]: " + cleanText + "\n";
+            });
+
+            var blob = new Blob([content], { type: 'text/plain' });
+            var url = window.URL.createObjectURL(blob);
+            
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'network_report.txt';
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            console.log("Export finished.");
+        }
 
         function toggleSidebar() {
             sidebar.classList.toggle('collapsed');
         }
-
-
 
         async function updateDashboard() {
             const start = Date.now();
@@ -384,7 +594,7 @@
                     dashStatusText.append(" ONLINE");
                     
                     dashLatency.innerText = latency;
-                    dashLatency.style.color = latency < 100 ? "#333" : "#e74c3c";
+                    dashLatency.style.color = latency < 100 ? "var(--text-main)" : "#e74c3c";
                     
                     dashTime.innerText = now.toLocaleTimeString();
                     dashTime.style.fontSize = "1.1rem";
@@ -410,6 +620,7 @@
         
         setInterval(updateDashboard, 3000);
         updateDashboard();
+
 
         function appendMessageToChat(content, senderType) {
             const messageDiv = document.createElement('div');
@@ -449,7 +660,7 @@
                     appendMessageToChat("No response.", 'ai');
                 }
             } catch (error) {
-                appendMessageToChat("Connection error.", 'ai');
+                appendMessageToChat("Connection Error.", 'ai');
             }
             toggleLoadingState(false);
         }
