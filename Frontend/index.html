@@ -428,8 +428,6 @@
                 gap: 5px;
             }
 
-            
-            
             #close-sidebar-btn {
                 display: block;
                 position: absolute;
@@ -444,8 +442,6 @@
                 z-index: 101;
             }
             
-            
-
             .glass-sidebar { 
                 position: fixed;
                 left: -100%; 
@@ -540,7 +536,7 @@
                 </div>
 
                 <div class="header-actions">
-                    <button class="icon-btn" onclick="exportChatLog()" data-tooltip="Export Report">
+                    <button class="icon-btn" onclick="exportChatLog()" data-tooltip="Export report">
                         <i class="fas fa-download"></i>
                     </button>
                     
@@ -652,9 +648,15 @@
         }
 
         function toggleSidebar() {
-            console.log("Toggling sidebar (mobile)");
             var sb = document.getElementById('dashboard-sidebar');
-            sb.classList.toggle('mobile-open');
+            
+            if (window.innerWidth < 850) {
+                console.log("Toggling sidebar (mobile)");
+                sb.classList.toggle('mobile-open');
+            } else {
+                console.log("Toggling sidebar (desktop)");
+                sb.classList.toggle('collapsed');
+            }
         }
 
         async function updateDashboard() {
