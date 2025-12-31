@@ -84,6 +84,12 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.5s ease, border-color 0.5s ease;
             overflow: hidden;
+            z-index: 100;
+            position: relative; 
+        }
+
+        #close-sidebar-btn {
+            display: none;
         }
 
         .glass-sidebar.collapsed {
@@ -146,6 +152,7 @@
             overflow: hidden;
             border: 1px solid var(--glass-border);
             transition: background-color 0.3s, border-color 0.5s ease;
+            position: relative;
         }
         
         .top-bar { 
@@ -411,15 +418,54 @@
         .fa-spinner { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* MOBILE FIX */
         @media (max-width: 850px) {
             .main-layout { flex-direction: column; height: 100vh; width: 100%; }
-            .glass-sidebar { width: 100%; flex-direction: row; height: auto; padding: 15px; overflow-x: auto; }
-            .stat-card { min-width: 150px; }
-            .chat-window { border-radius: 0; flex: 1; }
-            #menu-toggle-btn { display: none; } 
-            .sidebar-title { display: none; } 
+            
+            #menu-toggle-btn { display: block; }
 
+            .app-title {
+                font-size: 0.95rem;
+                gap: 5px;
+            }
+
+            
+            
+            #close-sidebar-btn {
+                display: block;
+                position: absolute;
+                top: 20px;
+                left: 20px; 
+                right: auto;
+                background: none;
+                border: none;
+                color: var(--accent-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                z-index: 101;
+            }
+            
+            
+
+            .glass-sidebar { 
+                position: fixed;
+                left: -100%; 
+                top: 0;
+                height: 100%;
+                width: 280px;
+                flex-direction: column; 
+                padding: 25px; 
+                padding-top: 60px; 
+                overflow-y: auto; 
+                transition: left 0.3s ease-in-out;
+                box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+            }
+            
+            .glass-sidebar.mobile-open {
+                left: 0; 
+            }
+
+            .chat-window { border-radius: 0; flex: 1; }
+            
             .text-input-wrapper {
                 display: flex;
                 gap: 10px;
@@ -432,14 +478,14 @@
             }
 
             #send-btn {
-                display: flex;
+                display: flex !important;
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
                 white-space: nowrap;
                 padding: 12px 20px;
                 border: 2px solid white;
-                flex-shrink: 0; /* IMPRESCINDIBLE PARA QUE NO SE APLASTE */
+                flex-shrink: 0; 
                 width: auto;
                 min-width: 100px;
             }
@@ -451,6 +497,11 @@
     <div class="main-layout">
         
         <div class="glass-sidebar" id="dashboard-sidebar">
+            
+            <button id="close-sidebar-btn" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
+
             <div class="sidebar-title">
                 <i class="fas fa-server"></i> Network Monitor
             </div>
@@ -601,7 +652,9 @@
         }
 
         function toggleSidebar() {
-            sidebar.classList.toggle('collapsed');
+            console.log("Toggling sidebar (mobile)");
+            var sb = document.getElementById('dashboard-sidebar');
+            sb.classList.toggle('mobile-open');
         }
 
         async function updateDashboard() {
