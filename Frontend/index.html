@@ -47,7 +47,9 @@
             --tooltip-text: #333;
         }
 
-        * { box-sizing: border-box; }
+        * { 
+            box-sizing: border-box; 
+        }
         
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -292,7 +294,9 @@
             transition: transform 0.2s, color 0.5s ease;
         }
 
-        #menu-toggle-btn:hover { transform: scale(1.1); }
+        #menu-toggle-btn:hover { 
+            transform: scale(1.1); 
+        }
         
         #messages-container { 
             flex: 1; 
@@ -368,9 +372,16 @@
             font-size: 0.9rem;
         }
         
-        .action-btn:hover { background: var(--accent-color); color: white; transform: translateY(-2px); }
+        .action-btn:hover { 
+            background: var(--accent-color); 
+            color: white; 
+            transform: translateY(-2px); 
+        }
         
-        .text-input-wrapper { display: flex; gap: 10px; }
+        .text-input-wrapper { 
+            display: flex; 
+            gap: 10px; 
+        }
         
         input { 
             flex: 1; 
@@ -384,7 +395,9 @@
             transition: background-color 0.3s, color 0.5s ease, border-color 0.5s ease;
         }
         
-        input:focus { border-color: var(--accent-color); }
+        input:focus { 
+            border-color: var(--accent-color); 
+        }
         
         button#send-btn { 
             background: var(--accent-color); 
@@ -398,7 +411,9 @@
             transition: background-color 0.5s ease;
         }
         
-        button#send-btn:hover { opacity: 0.9; }
+        button#send-btn:hover { 
+            opacity: 0.9; 
+        }
 
         .status-dot {
             width: 10px;
@@ -406,8 +421,16 @@
             border-radius: 50%;
             display: inline-block;
         }
-        .online { background-color: #2ecc71; box-shadow: 0 0 10px #2ecc71; animation: pulse 2s infinite; }
-        .offline { background-color: #e74c3c; }
+
+        .online { 
+            background-color: #2ecc71; 
+            box-shadow: 0 0 10px #2ecc71; 
+            animation: pulse 2s infinite; 
+        }
+
+        .offline { 
+            background-color: #e74c3c; 
+        }
         
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
@@ -415,13 +438,24 @@
             100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
         }
 
-        .fa-spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .fa-spinner { 
+            animation: spin 1s linear infinite; 
+        }
+
+        @keyframes spin { 
+            100% { transform: rotate(360deg); } 
+        }
 
         @media (max-width: 850px) {
-            .main-layout { flex-direction: column; height: 100vh; width: 100%; }
+            .main-layout { 
+                flex-direction: column; 
+                height: 100vh; 
+                width: 100%; 
+            }
             
-            #menu-toggle-btn { display: block; }
+            #menu-toggle-btn { 
+                display: block; 
+            }
 
             .app-title {
                 font-size: 0.95rem;
@@ -460,7 +494,10 @@
                 left: 0; 
             }
 
-            .chat-window { border-radius: 0; flex: 1; }
+            .chat-window { 
+                border-radius: 0; 
+                flex: 1; 
+            }
             
             .text-input-wrapper {
                 display: flex;
@@ -676,7 +713,7 @@
                     dashLatency.innerText = latency;
                     dashLatency.style.color = latency < 100 ? "var(--text-main)" : "#e74c3c";
                     
-                    dashTime.innerText = now.toLocaleTimeString();
+                    dashTime.innerText = now.toLocaleTimeString('es-ES', { hour12: false });
                     dashTime.style.fontSize = "1.1rem";
                 } else {
                     throw new Error("Server error");
@@ -698,9 +735,8 @@
             }
         }
         
-        setInterval(updateDashboard, 3000);
+        setInterval(updateDashboard, 1000);
         updateDashboard();
-
 
         function appendMessageToChat(content, senderType) {
             const messageDiv = document.createElement('div');
@@ -721,23 +757,30 @@
             if (userText === "") return;
 
             appendMessageToChat(userText, 'user');
+            appendMessageToChat("Processing... this may take a little bit.", 'ai');
             inputField.value = '';
             toggleLoadingState(true);
 
             try {
-                const response = await fetch(SERVER_URL + '/chat', {
+                const response = await fetch(SERVER_URL + '/message', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userText }) 
                 });
                 
-                if (!response.ok) throw new Error("Error");
-                const data = await response.json();
-                
-                if (data.response) {
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    appendMessageToChat(data.error ? `Error: ${data.error}` : "Request failed.", 'ai');
+                } else if (data.analysis_text || data.suggested_solution) {
+                    let botReply = `<strong>Problem:</strong> ${data.command_used || 'Unknown'}<br><br>`;
+                    botReply += `<strong>Status:</strong> ${data.result || data.status || 'Unknown'}<br><br>`;
+                    botReply += `<strong>What to do:</strong> ${data.suggested_solution || 'No solution provided'}`;
+                    appendMessageToChat(botReply, 'ai');
+                } else if (data.response) {
                     appendMessageToChat(data.response, 'ai');
                 } else {
-                    appendMessageToChat("No response.", 'ai');
+                    appendMessageToChat("Done.", 'ai');
                 }
             } catch (error) {
                 appendMessageToChat("Connection Error.", 'ai');
@@ -746,26 +789,35 @@
         }
 
         async function executeNetworkCommand(commandName) {
-            let displayText = commandName;
-            if (commandName === 'ping') displayText = 'ping google.com';
-            if (commandName === 'nslookup') displayText = 'nslookup google.com';
+            let message = '';
 
-            appendMessageToChat(`Running: <code>${displayText}</code>`, 'user');
+            if (commandName === 'ping') message = 'internet is slow';
+            if (commandName === 'ipconfig') message = 'check my ip';
+            if (commandName === 'nslookup') message = 'dns problem with google.com';
+            if (commandName === 'traceroute') message = 'check response from example.com';
+
+            appendMessageToChat(`Running: <strong>${commandName}</strong>`, 'user');
             toggleLoadingState(true);
 
             try {
-                const response = await fetch(SERVER_URL + '/run', {
+                const response = await fetch(SERVER_URL + '/message', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ command: commandName }) 
+                    body: JSON.stringify({ message }) 
                 });
-                
-                if (!response.ok) throw new Error("Error");
-                const data = await response.json();
 
-                if (data.output) {
-                    const formattedOutput = `<div class="terminal-output">${data.output}</div>`;
-                    appendMessageToChat(formattedOutput, 'ai');
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    appendMessageToChat(data.error ? `Error: ${data.error}` : "Command failed.", 'ai');
+                } else if (data.analysis_text || data.suggested_solution) {
+                    let botReply = `<strong>Analysis:</strong> ${data.analysis_text || 'N/A'}<br><br>`;
+                    botReply += `<strong>Solution:</strong> ${data.suggested_solution || 'N/A'}<br><br>`;
+                    botReply += `<strong>Command:</strong> <code>${data.command_used || commandName}</code><br>`;
+                    botReply += `<strong>Status:</strong> ${data.status || 'N/A'} | <strong>Result:</strong> ${data.result || 'N/A'}`;
+                    appendMessageToChat(botReply, 'ai');
+                } else if (data.response) {
+                    appendMessageToChat(data.response, 'ai');
                 } else {
                     appendMessageToChat("Done (no output).", 'ai');
                 }
@@ -774,15 +826,24 @@
             }
             toggleLoadingState(false);
         }
-
+            
         function toggleLoadingState(isLoading) {
             const actionButtons = document.querySelectorAll('.action-btn');
             sendButton.disabled = isLoading;
-            actionButtons.forEach(btn => btn.disabled = isLoading);
+            //actionButtons.forEach(btn => btn.disabled = isLoading);
         }
 
         function handleKeyPress(event) {
             if (event.key === 'Enter') handleSendMessage();
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
         }
     </script>
 </body>
