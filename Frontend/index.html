@@ -601,8 +601,8 @@
                     <button class="action-btn" onclick="executeNetworkCommand('ipconfig')">
                         <i class="fas fa-list"></i> IP Config
                     </button>
-                    <button class="action-btn" onclick="executeNetworkCommand('traceroute')">
-                        <i class="fas fa-route"></i> Trace Route
+                    <button class="action-btn" onclick="executeNetworkCommand('curl')">
+                        <i class="fas fa-route"></i> Curl
                     </button>
                     <button class="action-btn" onclick="executeNetworkCommand('nslookup')">
                         <i class="fas fa-search"></i> NSLookup
@@ -794,7 +794,7 @@
             if (commandName === 'ping') message = 'internet is slow';
             if (commandName === 'ipconfig') message = 'check my ip';
             if (commandName === 'nslookup') message = 'dns problem with google.com';
-            if (commandName === 'traceroute') message = 'check response from example.com';
+            if (commandName === 'curl') message = 'check response from example.com';
 
             appendMessageToChat(`Running: <strong>${commandName}</strong>`, 'user');
             toggleLoadingState(true);
